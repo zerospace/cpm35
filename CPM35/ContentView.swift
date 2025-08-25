@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var imagePicker: PhotosPickerItem?
     @State private var image: Image?
     @State private var inputImage: CIImage?
+    @State private var uiImage: UIImage?
     
     var body: some View {
         NavigationStack {
@@ -27,8 +28,8 @@ struct ContentView: View {
                         let filter = CPM35Filter(image: ciImage)
                         guard let outputImage = filter.outputImage else { return }
                         if let cgImage = CIContext().createCGImage(outputImage, from: ciImage.extent) {
-                            let uiImage = UIImage(cgImage: cgImage)
-                            image = Image(uiImage: uiImage)
+                            uiImage = UIImage(cgImage: cgImage)
+                            image = Image(uiImage: uiImage!)
                         }
                     }
                 } label: {
@@ -60,11 +61,17 @@ struct ContentView: View {
                     }
                 }
                 
-                if let share = image {
+                if let share = uiImage {
                     ToolbarItem(placement: .topBarTrailing) {
-                        ShareLink(item: share, preview: SharePreview("CPM35", image: share)) {
+//                        ShareLink(item: share, preview: SharePreview("CPM35", image: share)) {
+//                            Image(systemName: "square.and.arrow.up")
+//                        }
+                        Button {
+                            UIImageWriteToSavedPhotosAlbum(share, nil, nil, nil)
+                        } label: {
                             Image(systemName: "square.and.arrow.up")
                         }
+
                     }
                 }
             }
